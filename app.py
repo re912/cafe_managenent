@@ -56,6 +56,47 @@ def product_list():
     conn.close()
     return render_template('product_list.html', products=products)
 
+# 商品削除機能
+@app.route('/delete_product/<int:id>', methods=['POST'])
+def delete_product(id):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM Product WHERE id = ?', (id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('product_list'))
+
+# 商品編集ページの表示と処理
+@app.route('/edit_product/<int:id>', methods=['GET', 'POST'])
+def edit_product(id):
+    conn = get_db_connection()
+    product = conn.execute('SELECT * FROM Product WHERE id = ?', (id,)).fetchone()
+
+    if request.method == 'POST':
+        name = request.form['name']
+        price = request.form['price']
+        category = request.form['category']
+        description = request.form['description']
+
+        # 画像の更新処理
+        file = request.files['image']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            image_url = filepath
+        else:
+            image_url = product['image_url']  # 画像がなければ元の画像URLを保持
+
+        conn.execute('''
+            UPDATE Product SET name = ?, price = ?, category = ?, image_url = ?, description = ? WHERE id = ?
+        ''', (name, price, category, image_url, description, id))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('product_list'))
+
+    conn.close()
+    return render_template('edit_product.html', product=product)
+
 # 在庫の入出庫処理ページ
 @app.route('/stock_operation', methods=['GET', 'POST'])
 def stock_operation():

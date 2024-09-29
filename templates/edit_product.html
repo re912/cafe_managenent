@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}商品編集{% endblock %}
+
+{% block content %}
+    <h1>商品編集</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <label for="name">商品名:</label>
+        <input type="text" name="name" value="{{ product['name'] }}" required>
+
+        <label for="price">価格:</label>
+        <input type="text" name="price" value="{{ product['price'] }}" required>
+
+        <label for="category">カテゴリー:</label>
+        <input type="text" name="category" value="{{ product['category'] }}" required>
+
+        <label for="description">説明:</label>
+        <textarea name="description" required>{{ product['description'] }}</textarea>
+
+        <label for="image">画像:</label>
+        {% if product['image_url'] %}
+            <img src="{{ url_for('static', filename=product['image_url'].split('static/', 1)[-1]) }}" alt="{{ product['name'] }}" width="100">
+        {% else %}
+            画像なし
+        {% endif %}
+        <input type="file" name="image">
+
+        <button type="submit">保存</button>
+    </form>
+{% endblock %}

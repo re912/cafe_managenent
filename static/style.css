@@ -120,3 +120,25 @@ footer {
     width: 100%;
     bottom: 0;
 }
+
+/* 編集・削除ボタンのスタイル */
+a {
+    text-decoration: none;
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 4px;
+}
+
+form button {
+    background-color: #f44336;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #e53935;
+}
