@@ -11,6 +11,7 @@
                 <th>操作</th>
                 <th>日時</th>
                 <th>担当者</th>
+                <th>アクション</th>  <!-- アクション列を追加 -->
             </tr>
         </thead>
         <tbody>
@@ -21,6 +22,13 @@
                 <td>{{ entry['operation_type'] }}</td>
                 <td>{{ entry['datetime'] }}</td>
                 <td>{{ entry['responsible_person'] }}</td>
+                <td>
+                    <!-- 編集と削除ボタンを追加 -->
+                    <a href="{{ url_for('edit_stock', log_id=entry['id']) }}" class="btn btn-warning">編集</a>
+                    <form action="{{ url_for('delete_stock', log_id=entry['id']) }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('本当に削除しますか？')">削除</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

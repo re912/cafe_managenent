@@ -14,6 +14,39 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+# 初回起動時にテーブルを作成する関数
+def init_db():
+    conn = get_db_connection()
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS StockLog (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            product_id INTEGER,
+            quantity INTEGER,
+            operation_type TEXT,
+            datetime TEXT,
+            responsible_person TEXT,
+            FOREIGN KEY (product_id) REFERENCES Product(id)
+        )
+    ''')
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS Product (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            price REAL,
+            category TEXT,
+            image_url TEXT,
+            description TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+# アプリケーションが起動する際にテーブルを初期化
+init_db()
+
+# 以下、他のFlaskルートや機能を定義
+
+
 # 画像の許可拡張子
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
@@ -48,6 +81,36 @@ def add_product():
 
     return render_template('add_product.html')
 
+# 商品編集ページの表示と処理
+@app.route('/edit_product/<int:product_id>', methods=['GET', 'POST'])
+def edit_product(product_id):
+    conn = get_db_connection()
+    product = conn.execute('SELECT * FROM Product WHERE id = ?', (product_id,)).fetchone()
+
+    if request.method == 'POST':
+        name = request.form['name']
+        price = request.form['price']
+        category = request.form['category']
+        description = request.form['description']
+        
+        conn.execute('UPDATE Product SET name = ?, price = ?, category = ?, description = ? WHERE id = ?',
+                     (name, price, category, description, product_id))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('product_list'))
+
+    conn.close()
+    return render_template('edit_product.html', product=product)
+
+# 商品削除機能
+@app.route('/delete_product/<int:product_id>', methods=['POST'])
+def delete_product(product_id):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM Product WHERE id = ?', (product_id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('product_list'))
+
 # 商品一覧ページ
 @app.route('/product_list')
 def product_list():
@@ -55,47 +118,6 @@ def product_list():
     products = conn.execute('SELECT * FROM Product').fetchall()  # Productテーブルの全データを取得
     conn.close()
     return render_template('product_list.html', products=products)
-
-# 商品削除機能
-@app.route('/delete_product/<int:id>', methods=['POST'])
-def delete_product(id):
-    conn = get_db_connection()
-    conn.execute('DELETE FROM Product WHERE id = ?', (id,))
-    conn.commit()
-    conn.close()
-    return redirect(url_for('product_list'))
-
-# 商品編集ページの表示と処理
-@app.route('/edit_product/<int:id>', methods=['GET', 'POST'])
-def edit_product(id):
-    conn = get_db_connection()
-    product = conn.execute('SELECT * FROM Product WHERE id = ?', (id,)).fetchone()
-
-    if request.method == 'POST':
-        name = request.form['name']
-        price = request.form['price']
-        category = request.form['category']
-        description = request.form['description']
-
-        # 画像の更新処理
-        file = request.files['image']
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
-            image_url = filepath
-        else:
-            image_url = product['image_url']  # 画像がなければ元の画像URLを保持
-
-        conn.execute('''
-            UPDATE Product SET name = ?, price = ?, category = ?, image_url = ?, description = ? WHERE id = ?
-        ''', (name, price, category, image_url, description, id))
-        conn.commit()
-        conn.close()
-        return redirect(url_for('product_list'))
-
-    conn.close()
-    return render_template('edit_product.html', product=product)
 
 # 在庫の入出庫処理ページ
 @app.route('/stock_operation', methods=['GET', 'POST'])
@@ -120,6 +142,35 @@ def stock_operation():
     products = conn.execute('SELECT * FROM Product').fetchall()
     conn.close()
     return render_template('stock_operation.html', products=products)
+
+# 在庫履歴の編集ページ
+@app.route('/edit_stock/<int:log_id>', methods=['GET', 'POST'])
+def edit_stock(log_id):
+    conn = get_db_connection()
+    stock_log = conn.execute('SELECT * FROM StockLog WHERE id = ?', (log_id,)).fetchone()
+
+    if request.method == 'POST':
+        quantity = int(request.form['quantity'])
+        operation_type = request.form['operation_type']
+        responsible_person = request.form['responsible_person']
+
+        conn.execute('UPDATE StockLog SET quantity = ?, operation_type = ?, responsible_person = ? WHERE id = ?',
+                     (quantity, operation_type, responsible_person, log_id))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('stock_history'))
+
+    conn.close()
+    return render_template('edit_stock.html', stock_log=stock_log)
+
+# 在庫履歴の削除機能
+@app.route('/delete_stock/<int:log_id>', methods=['POST'])
+def delete_stock(log_id):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM StockLog WHERE id = ?', (log_id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('stock_history'))
 
 # 在庫履歴一覧を表示
 @app.route('/stock_history')
