@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>在庫履歴</h2>
+    <table class="stock-history-table">
+        <thead>
+            <tr>
+                <th>商品名</th>
+                <th>数量</th>
+                <th>操作</th>
+                <th>日時</th>
+                <th>担当者</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in stock_logs %}
+            <tr>
+                <td>{{ entry['product_name'] }}</td>
+                <td>{{ entry['quantity'] }}</td>
+                <td>{{ entry['operation_type'] }}</td>
+                <td>{{ entry['datetime'] }}</td>
+                <td>{{ entry['responsible_person'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

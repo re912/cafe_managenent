@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}商品一覧{% endblock %}
+
+{% block content %}
+    <h1>商品一覧</h1>
+    <table border="1">
+        <tr>
+            <th>商品名</th>
+            <th>価格</th>
+            <th>カテゴリー</th>
+            <th>説明</th>
+            <th>画像</th>
+        </tr>
+        {% for product in products %}
+        <tr>
+            <td>{{ product['name'] }}</td>
+            <td>{{ product['price'] }}</td>
+            <td>{{ product['category'] }}</td>
+            <td>{{ product['description'] }}</td>
+            <td>
+                {% if product['image_url'] %}
+                    <img src="{{ url_for('static', filename=product['image_url'].split('static/', 1)[-1]) }}" alt="{{ product['name'] }}" width="100">
+                {% else %}
+                    画像なし
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

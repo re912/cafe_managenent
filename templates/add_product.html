@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}商品入力{% endblock %}
+
+{% block content %}
+    <h1>商品を追加する</h1>
+    <form action="/add_product" method="POST" enctype="multipart/form-data">
+        <label for="name">商品名:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="price">価格:</label>
+        <input type="text" id="price" name="price" required>
+
+        <label for="category">カテゴリ:</label>
+        <input type="text" id="category" name="category" required>
+
+        <label for="description">説明:</label>
+        <textarea id="description" name="description"></textarea>
+
+        <label for="image">画像:</label>
+        <input type="file" id="image" name="image" accept="image/*">
+
+        <button type="submit">追加</button>
+    </form>
+{% endblock %}
