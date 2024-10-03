@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>ログイン</h2>
+    <form action="/login" method="POST">
+        <label for="name">名前:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="password">パスワード:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit" class="btn">ログイン</button>
+    </form>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}在庫履歴編集{% endblock %}
+
+{% block content %}
+    <h1>在庫履歴編集</h1>
+    <form method="POST">
+        <label for="quantity">数量:</label>
+        <input type="number" name="quantity" value="{{ stock_log['quantity'] }}" required>
+
+        <label for="operation_type">操作:</label>
+        <select name="operation_type">
+            <option value="入荷" {% if stock_log['operation_type'] == '入荷' %}selected{% endif %}>入荷</option>
+            <option value="出荷" {% if stock_log['operation_type'] == '出荷' %}selected{% endif %}>出荷</option>
+        </select>
+
+        <label for="responsible_person">担当者:</label>
+        <input type="text" name="responsible_person" value="{{ stock_log['responsible_person'] }}" required>
+
+        <button type="submit">保存</button>
+    </form>
+{% endblock %}

@@ -15,15 +15,14 @@
                 <li><a href="{{ url_for('product_list') }}">商品一覧</a></li>
                 <li><a href="{{ url_for('stock_operation') }}">在庫の入出庫</a></li>
                 <li><a href="{{ url_for('stock_history') }}">在庫履歴</a></li>
+                <li><a href="{{ url_for('register_staff') }}">スタッフ登録</a></li> <!-- 追加部分 -->
             </ul>
         </nav>
     </header>
 
     <!-- メインコンテンツ -->
     <main>
-        {% block content %}
-        <!-- 各ページのコンテンツが挿入されます -->
-        {% endblock %}
+        {% block content %}{% endblock %}
     </main>
 
     <!-- フッター -->

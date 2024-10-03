@@ -21,7 +21,7 @@
         </select>
 
         <label for="responsible_person">担当者:</label>
-        <input type="text" id="responsible_person" name="responsible_person" required>
+        <input type="text" id="responsible_person" name="responsible_person" value="{{ request.cookies.get('responsible_person', '') }}" required readonly>
 
         <button type="submit" class="btn">送信</button>
     </form>
